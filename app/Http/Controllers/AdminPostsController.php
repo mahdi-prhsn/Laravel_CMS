@@ -24,12 +24,10 @@ class AdminPostsController extends Controller
 
 
         $posts = Post::paginate(2);
+        $categories = Category::all();
 
 
-
-        return view('admin.posts.index', compact('posts','categories'));
-
-
+        return view('admin.posts.index', compact('posts', 'categories'));
     }
 
     /**
@@ -42,7 +40,7 @@ class AdminPostsController extends Controller
         //
 
 
-        $categories = Category::pluck('name','id')->all();
+        $categories = Category::pluck('name', 'id')->all();
 
 
         return view('admin.posts.create', compact('categories'));
@@ -64,7 +62,7 @@ class AdminPostsController extends Controller
         $user = Auth::user();
 
 
-        if($file = $request->file('photo_id')){
+        if ($file = $request->file('photo_id')) {
 
 
             $name = time() . $file->getClientOriginalName();
@@ -72,12 +70,10 @@ class AdminPostsController extends Controller
 
             $file->move('images', $name);
 
-            $photo = Photo::create(['file'=>$name]);
+            $photo = Photo::create(['file' => $name]);
 
 
             $input['photo_id'] = $photo->id;
-
-
         }
 
 
@@ -89,12 +85,6 @@ class AdminPostsController extends Controller
 
 
         return redirect('/admin/posts');
-
-
-
-
-
-
     }
 
     /**
@@ -120,11 +110,9 @@ class AdminPostsController extends Controller
 
         $post = Post::findOrFail($id);
 
-        $categories = Category::pluck('name','id')->all();
+        $categories = Category::pluck('name', 'id')->all();
 
-        return view('admin.posts.edit', compact('post','categories'));
-
-
+        return view('admin.posts.edit', compact('post', 'categories'));
     }
 
     /**
@@ -142,7 +130,7 @@ class AdminPostsController extends Controller
 
 
 
-        if($file = $request->file('photo_id')){
+        if ($file = $request->file('photo_id')) {
 
 
             $name = time() . $file->getClientOriginalName();
@@ -150,23 +138,17 @@ class AdminPostsController extends Controller
 
             $file->move('images', $name);
 
-            $photo = Photo::create(['file'=>$name]);
+            $photo = Photo::create(['file' => $name]);
 
 
             $input['photo_id'] = $photo->id;
-
-
         }
 
 
-      Auth::user()->posts()->whereId($id)->first()->update($input);
+        Auth::user()->posts()->whereId($id)->first()->update($input);
 
 
         return redirect('/admin/posts');
-
-
-
-
     }
 
     /**
@@ -186,24 +168,18 @@ class AdminPostsController extends Controller
         $post->delete();
 
         return redirect('/admin/posts');
-
-
     }
 
 
-    public function post($slug){
+    public function post($id)
+    {
 
 
-        $post = Post::findBySlugOrFail($slug);
+        $post = Post::findOrFail($id);
 
         $comments = $post->comments()->whereIsActive(1)->get();
 
 
-        return view('post', compact('post','comments'));
-
-
+        return view('post', compact('post', 'comments'));
     }
-
-
-
 }
